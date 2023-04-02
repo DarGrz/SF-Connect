@@ -19,7 +19,7 @@ app.get("/", function (req, res) {
 
 app.get("/contacts/", function (req, res) {
   conn.query(
-    "SELECT Id, Name, CreatedDate FROM Contact",
+    "SELECT Id, Name, lastName, CreatedDate FROM Contact",
     function (err, result) {
       if (err) {
         res.json(err);
@@ -28,6 +28,19 @@ app.get("/contacts/", function (req, res) {
       res.json(result);
     }
   );
+});
+
+app.post("/create-contact/", function (req, res) {
+  const { FirstName, LastName } = req.body;
+
+  console.log("create");
+  conn.sobject("Contact").create({ FirstName, LastName }, function (err, ret) {
+    if (err || !ret.success) {
+      return console.error(err, ret);
+    } else {
+      console.log("Created record id : " + ret.id);
+    }
+  });
 });
 
 app.get("/accounts/", function (req, res) {
@@ -43,8 +56,8 @@ app.get("/accounts/", function (req, res) {
   );
 });
 
-app.listen(3000, (req, res) => {
-  console.log("Server running at port 3000");
+app.listen(process.env.PORT, (req, res) => {
+  console.log("Server running at port: " + process.env.PORT);
 });
 
 function login() {
